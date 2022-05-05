@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Change Color With Speech</title>
+    <style>
+      body {
+        height: 100vh;
+        font-family: sans-serif;
+        background-color: rgb(255, 255, 255);
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      #button {
+        border: none;
+        background: linear-gradient(to right, #f6d365 0%, #fda085 100%);
+        color: rgb(37, 37, 37);
+        padding: 1rem;
+        border-radius: 5px;
+        cursor: pointer;
+        outline: none;
+        font-size: 1.5rem;
+        transition: 0.1s ease-in-out;
+        color: rgb(107, 107, 107);
+      }
+      #button:hover {
+        background: linear-gradient(to right, #fda085 0%, #f6d365 100%);
+      }
+      #button:active {
+        box-shadow: 0 4px 25px rgba(14, 102, 202, 0.2);
+        transform: translateY(4px) scale(0.95);
+      }
+      #colors {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 60%;
+        gap: 0 1rem;
+      }
+      .color-box {
+        padding: 15px;
+        background-color: rgb(77, 77, 77);
+        border-radius: 5px;
+      }
+      .color-card {
+        width: 50px;
+        height: 50px;
+        border-radius: 5px;
+        margin: 10px;
+        border: 5px solid #fff;
+      }
+      .color-name {
+        font-size: 1.2rem;
+        color: rgb(255, 255, 255);
+        text-align: center;
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <button type="button" id="button">Meni bos va birorta rang ayt</button>
+    <h2>Ranglar</h2>
+    <div id="colors"></div>
+    <script>
+      const button = document.getElementById("button");
+      const colorsContainer = document.getElementById("colors");
+
+      const colors = [
+        {
+          color: "red",
+          text: "qizil",
+        },
+        {
+          color: "green",
+          text: "yashil",
+        },
+        {
+          color: "blue",
+          text: "kok",
+        },
+        {
+          color: "yellow",
+          text: "sariq",
+        },
+        {
+          color: "black",
+          text: "qora",
+        },
+        {
+          color: "white",
+          text: "oq",
+        },
+      ];
+      const SpeechRecognition =
+        window.SpeechRecognition || webkitSpeechRecognition;
+      const recognition = new SpeechRecognition();
+      let recognizing = false;
+
+      recognition.lang = "uz-UZ";
+      recognition.interimResults = true;
+      recognition.continuous = true;
+
+      recognition.onstart = function () {
+        recognizing = true;
+      };
+
+      recognition.onend = function () {
+        recognizing = false;
+      };
+
+      recognition.onresult = function (event) {
+        const last = event.results.length - 1;
+        const command = event.results[last][0].transcript;
+        colors.forEach((color) => {
+          if (command.includes(color.text)) {
+            document.body.style.backgroundColor = color.color;
+          }
+        });
+      };
+
+      recognition.onspeechend = function () {
+        recognition.stop();
+        button.innerText = "Meni bos va birorta rang ayt";
+        document.body.style.backgroundColor = "#fff";
+        alert("Speech recognition has stopped.");
+      };
+
+      button.addEventListener("click", function (e) {
+        if (recognizing) {
+          recognition.stop();
+          e.target.innerText = "Meni bos va birorta rang ayt";
+          document.body.style.backgroundColor = "#fff";
+          return;
+        }
+        recognition.start();
+        e.target.innerText = "stop";
+      });
+      window.onload = function () {
+        colors.forEach((color) => {
+          const colorBox = document.createElement("div");
+          colorBox.className = "color-box";
+          const colorCard = document.createElement("div");
+          colorCard.className = "color-card";
+          colorCard.style.backgroundColor = color.color;
+          colorBox.appendChild(colorCard);
+          const colorName = document.createElement("p");
+          colorName.className = "color-name";
+          colorName.innerText = color.text;
+          colorBox.appendChild(colorName);
+          colorsContainer.appendChild(colorBox);
+        });
+      };
+    </script>
+  </body>
+</html>
